@@ -14,7 +14,7 @@ w = 120
 
 
 # 算法
-total_round = 1000
+total_round = 200
 algorithm = 1
 with_G = False
 

@@ -20,9 +20,9 @@ def solve(orders, current_time, last_round_orders,
     t = cost_saving(orders)
     transfer_t, original_individual_cost_saving, original_total_cost_saving, id_map = transfer_id_map(t)
     sorted_edge_list = sort_total_cost(t, id_map)
-    test_data = transfer_t
 
-    test_data_2 = deepcopy(test_data)
+    test_data = deepcopy(transfer_t)
+    test_data_2 = deepcopy(transfer_t)
 
     # 算法
     result_type = None
@@ -86,7 +86,7 @@ def solve(orders, current_time, last_round_orders,
                 last_round_orders.append(order)
                 match[i] = []
 
-    return match, t, id_map
+    return match, t, transfer_t, id_map
 
 
 if __name__ == '__main__':

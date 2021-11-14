@@ -8,11 +8,11 @@ from experiment.gas import gas_match
 from setting import *
 from datadeal.problem import ProblemInstance
 from experiment.solve import solve
-from experiment.costSaving import get_original_id_by_mapped
+from experiment.costSaving import get_original_id_by_mapped, cost_saving, transfer_id_map
 import sys
 
 sys.path.append(algorithm_path)
-from preference_util import verify_match
+from preference_util import verify_match, fairness_compute
 
 
 def experiment(total_round=3000, algorithm_strategy=2, with_G_strategy=True):
@@ -28,6 +28,7 @@ def experiment(total_round=3000, algorithm_strategy=2, with_G_strategy=True):
         'unmatched': 0,
         'matched': 0,
         'match_rate': 0,
+        'unfair': 0,
 
         'total_cost_saving': 0,
         'running_time': 0
@@ -49,6 +50,7 @@ def experiment(total_round=3000, algorithm_strategy=2, with_G_strategy=True):
             'unmatched': 0,
             'matched': 0,
             'match_rate': 0,
+            'unfair': 0,
 
             'total_cost_saving': 0,
             'running_time': 0
@@ -60,13 +62,15 @@ def experiment(total_round=3000, algorithm_strategy=2, with_G_strategy=True):
         last_round_orders = []
 
         # 算法运行
-        match, t, id_map = solve(orders=orders, current_time=current_time, last_round_orders=last_round_orders,
+        match, t, transfer_t, id_map = solve(orders=orders, current_time=current_time, last_round_orders=last_round_orders,
                                  algorithm=algorithm_strategy, with_G=with_G_strategy)
 
         # 算法正确初筛（匹配错误）
         if len(match) == 0:
             continue
         match, verification_result = verify_match(match, skip_bug)
+
+        unfair_count, none_count = fairness_compute(transfer_t, match)
 
         for i in range(len(match)):
             if len(match[i]) == 0:
@@ -94,11 +98,13 @@ def experiment(total_round=3000, algorithm_strategy=2, with_G_strategy=True):
         measurement['size'] = len(match)
         measurement['unmatched'] = verification_result['single_dog'] + verification_result['wrong_match'] + verification_result['long_list']
         measurement['matched'] = verification_result['has_partner']
+        measurement['unfair'] = unfair_count
 
         overall_measurement['size'] += measurement['size']
         overall_measurement['matched'] += measurement['matched']
         overall_measurement['unmatched'] += measurement['unmatched']
         overall_measurement['total_cost_saving'] += measurement['total_cost_saving']
+        overall_measurement['unfair'] += measurement['unfair']
 
         # 收尾
         current_time = current_time + fragment
@@ -156,7 +162,7 @@ def experiment_2(total_round=1000, algorithms=[1, 3]):
         match_compare = [None, None]
 
         for i in range(2):
-            match_compare[i], t, id_map = solve(orders=orders_list[i], current_time=current_time,
+            match_compare[i], t, transfer_t, id_map = solve(orders=orders_list[i], current_time=current_time,
                                                 last_round_orders=last_round_orders,
                                                 algorithm=algorithms[i], with_G=False)
 
@@ -233,6 +239,7 @@ def experiment_gas(total_round=1000):
         'unmatched': 0,
         'matched': 0,
         'match_rate': 0,
+        'unfair': 0,
 
         'total_cost_saving': 0,
         'running_time': 0
@@ -250,12 +257,22 @@ def experiment_gas(total_round=1000):
         orders, drivers = problem.batch(current_time)
 
         # 算法运行
-        measurement = gas_match(orders)
+        measurement, match = gas_match(orders)
+
+        t = cost_saving(orders)
+        transfer_t, original_individual_cost_saving, original_total_cost_saving, id_map = transfer_id_map(t)
+        for i in range(len(match)):
+            if match[i] is None:
+                continue
+            match[i] = [match[i]]
+        unfair_count, none_count = fairness_compute(transfer_t, match)
+
 
         overall_measurement['size'] += measurement['size']
         overall_measurement['matched'] += measurement['matched']
         overall_measurement['unmatched'] += measurement['unmatched']
         overall_measurement['total_cost_saving'] += measurement['total_cost_saving']
+        overall_measurement['unfair'] += unfair_count
 
         current_time += fragment
     end_time = time.time()
