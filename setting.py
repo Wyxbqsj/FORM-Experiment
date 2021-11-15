@@ -9,12 +9,13 @@ algorithm_path = r'E:\workspace\A-Experiment-code\FORM_Experiment_Code\FORM'
 
 
 # 超参数
-fragment = 60
-w = 120
+fragment = 120
+base_wait_time = 60
+wait_time_noise = 10
 
 
 # 算法
-total_round = 200
+total_round = 100
 algorithm = 1
 with_G = False
 

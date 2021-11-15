@@ -1,3 +1,4 @@
+import random
 import numpy as np
 from datadeal.order import Order
 from datadeal.orderAndDriver import Driver
@@ -47,6 +48,7 @@ class ProblemInstance:
             #     orders.append(single_order)
             # single_order = next(ords)
             self.waitOrder.remove(single_order)
+            single_order.maxWait = base_wait_time + random.randint(0, wait_time_noise)
             orders.append(single_order)
             try:
                 single_order = next(ords)

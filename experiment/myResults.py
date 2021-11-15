@@ -272,7 +272,7 @@ def experiment_gas(total_round=1000):
         overall_measurement['matched'] += measurement['matched']
         overall_measurement['unmatched'] += measurement['unmatched']
         overall_measurement['total_cost_saving'] += measurement['total_cost_saving']
-        overall_measurement['unfair'] += unfair_count
+        overall_measurement['unfair'] += (unfair_count + none_count)
 
         current_time += fragment
     end_time = time.time()
@@ -286,19 +286,19 @@ def experiment_gas(total_round=1000):
 
 if __name__ == '__main__':
 
-    # experiment 1
-    overall_measurement = experiment_gas(total_round)
-    print('algorithm_strategy:', 'gas',
-          'with_G:', 'None',
-          overall_measurement)
-    for algorithm_strategy in [0, 1, 2, 3]:
-        for with_G in [True, False]:
-            if algorithm_strategy == 0 and with_G == False:
-                continue
-            overall_measurement = experiment(total_round, algorithm_strategy, with_G)
-            print('algorithm_strategy:', algorithm_strategy,
-                  'with_G:', with_G,
-                  overall_measurement)
+    # # experiment 1
+    # overall_measurement = experiment_gas(total_round)
+    # print('algorithm_strategy:', 'gas',
+    #       'with_G:', 'None',
+    #       overall_measurement)
+    # for algorithm_strategy in [0, 1, 2, 3]:
+    #     for with_G in [True, False]:
+    #         if algorithm_strategy == 0 and with_G == False:
+    #             continue
+    #         overall_measurement = experiment(total_round, algorithm_strategy, with_G)
+    #         print('algorithm_strategy:', algorithm_strategy,
+    #               'with_G:', with_G,
+    #               overall_measurement)
 
 
-    # experiment_2()
+    experiment_2()
