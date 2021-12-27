@@ -62,7 +62,7 @@ def experiment(total_round=3000, algorithm_strategy=2, with_G_strategy=True):
         last_round_orders = []
 
         # 算法运行
-        match, t, transfer_t, id_map = solve(orders=orders, current_time=current_time, last_round_orders=last_round_orders,
+        match, t, transfer_t, id_map, plan = solve(orders=orders, current_time=current_time, last_round_orders=last_round_orders,
                                  algorithm=algorithm_strategy, with_G=with_G_strategy)
 
         # 算法正确初筛（匹配错误）
@@ -162,7 +162,7 @@ def experiment_2(total_round=1000, algorithms=[1, 3]):
         match_compare = [None, None]
 
         for i in range(2):
-            match_compare[i], t, transfer_t, id_map = solve(orders=orders_list[i], current_time=current_time,
+            match_compare[i], t, transfer_t, id_map, plan = solve(orders=orders_list[i], current_time=current_time,
                                                 last_round_orders=last_round_orders,
                                                 algorithm=algorithms[i], with_G=False)
 
@@ -260,7 +260,7 @@ def experiment_gas(total_round=1000):
         measurement, match = gas_match(orders)
 
         t = cost_saving(orders)
-        transfer_t, original_individual_cost_saving, original_total_cost_saving, id_map = transfer_id_map(t)
+        transfer_t, original_individual_cost_saving, original_total_cost_saving, id_map, original_plan = transfer_id_map(t)
         for i in range(len(match)):
             if match[i] is None:
                 continue
@@ -286,19 +286,19 @@ def experiment_gas(total_round=1000):
 
 if __name__ == '__main__':
 
-    # # experiment 1
-    # overall_measurement = experiment_gas(total_round)
-    # print('algorithm_strategy:', 'gas',
-    #       'with_G:', 'None',
-    #       overall_measurement)
-    # for algorithm_strategy in [0, 1, 2, 3]:
-    #     for with_G in [True, False]:
-    #         if algorithm_strategy == 0 and with_G == False:
-    #             continue
-    #         overall_measurement = experiment(total_round, algorithm_strategy, with_G)
-    #         print('algorithm_strategy:', algorithm_strategy,
-    #               'with_G:', with_G,
-    #               overall_measurement)
+    # experiment 1
+    overall_measurement = experiment_gas(total_round)
+    print('algorithm_strategy:', 'gas',
+          'with_G:', 'None',
+          overall_measurement)
+    for algorithm_strategy in [0, 1, 2, 3]:
+        for with_G in [True, False]:
+            if algorithm_strategy == 0 and with_G == False:
+                continue
+            overall_measurement = experiment(total_round, algorithm_strategy, with_G)
+            print('algorithm_strategy:', algorithm_strategy,
+                  'with_G:', with_G,
+                  overall_measurement)
 
 
-    experiment_2()
+    # experiment_2()

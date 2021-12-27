@@ -12,7 +12,7 @@ class Order:
         self.pickup_loc = (float(string_list[5]), float(string_list[6]))
         try:
             self.dropoff_loc = (float(string_list[9]), float(string_list[10]))
-        except:
+        except:  
             self.dropoff_loc = (0, 0)
             print(string_list)
 

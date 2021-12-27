@@ -22,7 +22,7 @@ class clear_data:
 
 
 if __name__ == '__main__':
-    data_file = "E:/workspace/A-Experiment-code/FORM_Experiment_Code/dataset/ExperimentData/raw_data/07/7.csv"
-    target_file = "E:/workspace/A-Experiment-code/FORM_Experiment_Code/dataset/ExperimentData/raw_data/07/clear7.csv"
+    data_file = "D:/ExperimentData/raw_data/07/7.csv"
+    target_file = "D:/ExperimentData/raw_data/07/clear7.csv"
     x = clear_data(data_file, target_file)
     x.clear()

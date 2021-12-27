@@ -25,17 +25,19 @@ def ManhaDrop2Drop(a: Order, b: Order):
 
 
 class myClass:
-    def __init__(self, id, match_id, save_total, save_individual, rate):
+    def __init__(self, id, match_id, save_total, save_individual, rate, plan):
         self.id = id
         self.match_id = match_id
         self.save_total = save_total
         self.save_individual = save_individual
         self.rate = rate
+        self.plan = plan
 
     def __repr__(self):
-        return str(self.id)+' '+str(self.match_id)+' '+str(self.save_total)+' '+str(self.save_individual)+'\n'
+        return str(self.id)+' '+str(self.match_id)+' '+str(self.save_total)+' '+str(self.save_individual)+' '+str(self.plan)+'\n'
 
 
+# costsaving返回的偏好表中添加了一个属性plan,记录两个乘客拼到一起采用哪种plan，用来确定package.py中两个order打包到一起形成的新order的一些属性
 def cost_saving(orders: List[Order]):
     ptable = {}
 
@@ -80,15 +82,19 @@ def cost_saving(orders: List[Order]):
                 plan4 = com+ManhaPick2Drop(orders[i],orders[j])
                 share = min(plan1, plan2, plan3, plan4)
                 if share == plan1:
+                    plan=1
                     ci = ManhaPick2Pick(orders[i],orders[j])+ManhaPick2Drop(orders[j],orders[i])/2
                     # cj = ManhaPick2Drop(orders[j],orders[i])/2+ManhaDrop2Drop(orders[i],orders[j])
                 if share == plan2:
+                    plan=2
                     ci = com +ManhaPick2Drop(orders[j],orders[j])/2
                     # cj = ManhaPick2Drop(orders[j],orders[j])/2
                 if share == plan3:
+                    plan=3
                     ci = ManhaPick2Drop(orders[i],orders[i])/2
                     # cj = com +ManhaPick2Drop(orders[i],orders[i])/2
                 if share == plan4:
+                    plan=4
                     ci = ManhaPick2Drop(orders[i],orders[j])/2+ManhaDrop2Drop(orders[j],orders[i])
                     # cj = ManhaPick2Pick(orders[j],orders[i])+ManhaPick2Drop(orders[i],orders[j])/2
                 d_sum = orders[i].absluteDistance + orders[j].absluteDistance
@@ -109,7 +115,7 @@ def cost_saving(orders: List[Order]):
 
 
                 ptable.setdefault(key, plist).append(
-                    myClass(orders[i].id, orders[j].id, save_total, save_individual, rate))
+                    myClass(orders[i].id, orders[j].id, save_total, save_individual, rate, plan))
     return ptable
 
 
@@ -125,23 +131,27 @@ def transfer_id_map(t):
     transfer_t = []
     t_individual_cost_saving = []
     t_total_cost_saving = []
+    t_plan=[] # 记录每个人和其他人共乘所采用的方案
     for i in range(len(t)):
         # transfer_t[i] = [t[i][j].match_id for j in range(len(t[i]))]
         t[i] = sorted(t[i], key=lambda myClass: myClass.save_individual, reverse=True)
         tmp = []
         tmp_individual_cost_saving = []
         tmp_total_cost_saving = []
+        tmp_plan=[]
 
         for j in range(len(t[i])):
-            tmp.insert(j, id_map[t[i][j].match_id])
+            tmp.insert(j, id_map[t[i][j].match_id]) # 在第j个位置插入i的第j个partner的转后的id
             tmp_individual_cost_saving.insert(j, t[i][j].save_individual)
             tmp_total_cost_saving.insert(j, t[i][j].save_total)
+            tmp_plan.insert(j,t[i][j].plan) # 在第j个位置插入了i和j拼车所采用的plan
 
-        transfer_t.insert(i, tmp)
+        transfer_t.insert(i, tmp) # 第i行插入passenger i 的所有partner转换后的id
         t_individual_cost_saving.insert(i, tmp_individual_cost_saving)
         t_total_cost_saving.insert(i, tmp_total_cost_saving)
+        t_plan.insert(i,tmp_plan) # 在第i行插入所有passenger的合乘plan
 
-    return transfer_t, t_individual_cost_saving, t_total_cost_saving, id_map
+    return transfer_t, t_individual_cost_saving, t_total_cost_saving, id_map, t_plan
 
 
 def sort_total_cost(t, id_map):
@@ -190,7 +200,7 @@ def test():
         currentTime = currentTime + batch_gap
         t = cost_saving(orders)
 
-        transfer_t, original_individual_cost_saving, original_total_cost_saving, id_map = transfer_id_map(t)
+        transfer_t, original_individual_cost_saving, original_total_cost_saving, id_map, original_plan = transfer_id_map(t)
         sorted_edge_list = sort_total_cost(t, id_map)
 
         # 以下是统计和算法阶段

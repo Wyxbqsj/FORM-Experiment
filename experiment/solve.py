@@ -18,7 +18,7 @@ def solve(orders, current_time, last_round_orders,
 
     # 预处理
     t = cost_saving(orders)
-    transfer_t, original_individual_cost_saving, original_total_cost_saving, id_map = transfer_id_map(t)
+    transfer_t, original_individual_cost_saving, original_total_cost_saving, id_map, original_plan = transfer_id_map(t)
     sorted_edge_list = sort_total_cost(t, id_map)
 
     test_data = deepcopy(transfer_t)
@@ -51,7 +51,7 @@ def solve(orders, current_time, last_round_orders,
                 # index_list_GFRM 里放的是在match里面的index
 
         t_GFRM = cost_saving(order_list_GFRM)
-        transfer_t_GFRM, original_individual_cost_saving_GFRM, original_total_cost_saving_GFRM, id_map_GFRM = transfer_id_map(t_GFRM)
+        transfer_t_GFRM, original_individual_cost_saving_GFRM, original_total_cost_saving_GFRM, id_map_GFRM, original_plan_GFRM = transfer_id_map(t_GFRM)
         sorted_edge_list_GFRM = sort_total_cost(t_GFRM, id_map_GFRM)
 
         match_GFRM = greedy_roommate_matching(transfer_t_GFRM, sorted_edge_list_GFRM, start_with=1)
@@ -86,7 +86,7 @@ def solve(orders, current_time, last_round_orders,
                 last_round_orders.append(order)
                 match[i] = []
 
-    return match, t, transfer_t, id_map
+    return match, t, transfer_t, id_map, original_plan
 
 
 if __name__ == '__main__':

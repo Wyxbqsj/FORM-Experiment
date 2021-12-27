@@ -97,12 +97,7 @@ class Driver:
         self.severedOrder.append(order)
         pickTime = 0 if order.speed == 0 else (abs(self.x - order.pickX) + abs(self.y - order.pickY)) / order.speed
         self.relaxTime = currentTime + order.dropoffTime - order.pickTime + pickTime
-        # sums = reinforcement.incomeRate.averageReward * reinforcement.incomeRate.roundCount
-        # reinforcement.incomeRate.roundCount += (self.relaxTime - currentTime) // fragment
-        # sums += order.totalAmount
-        # reinforcement.incomeRate.averageReward = sums / reinforcement.incomeRate.roundCount
-        #
-        #
+
 
 
 

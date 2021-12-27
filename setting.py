@@ -1,12 +1,14 @@
 # 数据配置
 month = 7
 day = 7
-data_dir_path = "E:/workspace/A-Experiment-code/FORM_Experiment_Code/dataset/ExperimentData/"
+data_dir_path = "D:/ExperimentData/"
 data_path = data_dir_path + "raw_data//%02d/clear%d.csv" % (month, day)
 
 # 算法路径
-algorithm_path = r'E:\workspace\A-Experiment-code\FORM_Experiment_Code\FORM'
+algorithm_path = r'D:\FORM\FORM-Implement-master'
 
+# 车辆速度
+carSpeed=0.0001 #每秒移动的经纬度,大约是66km/h
 
 # 超参数
 fragment = 120

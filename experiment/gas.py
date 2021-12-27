@@ -54,7 +54,7 @@ def gas_match(orders):
     for order_list in order_group_list:
         t = cost_saving(order_list)
 
-        transfer_t, original_individual_cost_saving, original_total_cost_saving, id_map = transfer_id_map(t)
+        transfer_t, original_individual_cost_saving, original_total_cost_saving, id_map, original_plan = transfer_id_map(t)
 
         edge_list = []
 
