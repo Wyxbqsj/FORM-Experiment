@@ -5,7 +5,7 @@ from copy import deepcopy
 from typing import List
 import numpy as np
 from datadeal.order import Order
-from costSaving import ManhaDrop2Drop,ManhaPick2Drop,ManhaPick2Pick
+from experiment.costSaving import ManhaDrop2Drop,ManhaPick2Drop,ManhaPick2Pick
 
 from tqdm import tqdm
 
@@ -90,6 +90,7 @@ def groupOrders(orders:List[Order], match, transfer_t, plan, id_map):
             package.deadline= (package.absluteDistance/carSpeed)*1.5+package.durable
             package.totalAmount=order_i.totalAmount+order_partner.totalAmount #打包后的订单，司机服务他会得到的收益
             package.available=True
+            package.speed = (order_i.speed+order_partner.speed)/2.0
 
             packageList.append(package)
 
@@ -145,7 +146,8 @@ if __name__ == '__main__':
                     'dropY':i.dropY,
                     'tripDistance':i.tripDistance,
                     'deadline':i.deadline,
-                    'revenue':i.totalAmount
+                    'revenue':i.totalAmount,
+                   'speed':i.speed
                        }
         print(summary)
 

@@ -22,6 +22,11 @@ algorithm = 1
 with_G = False
 
 
+# 算法
+dispatch_algorithm = "random"
+
+bigDistance = 0.01271 * 3
+
 # 随机种子
 seed = 71437
 
