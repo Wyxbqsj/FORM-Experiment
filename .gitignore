@@ -1,0 +1,13 @@
+
+/.idea
+/result
+/stateValue/
+/datadeal/tmpData/
+/experiment/tmpData
+/model/
+
+/dispatch/tmpData/
+
+/tmpData/
+*.pyc
+*.xml
