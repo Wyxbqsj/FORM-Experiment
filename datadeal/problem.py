@@ -1,7 +1,7 @@
 import random
 import numpy as np
 from datadeal.order import Order
-from datadeal.orderAndDriver import Driver
+from datadeal.driver import Driver
 from setting import *
 import os
 import pickle
@@ -50,6 +50,7 @@ class ProblemInstance:
             self.waitOrder.remove(single_order)
             single_order.maxWait = base_wait_time + random.randint(0, wait_time_noise)
             orders.append(single_order)
+
             try:
                 single_order = next(ords)
             except Exception as e:
@@ -64,6 +65,6 @@ class ProblemInstance:
 
 if __name__ == '__main__':
     problemInstance = ProblemInstance(data_path, 1000)
-    print()
+
 
 

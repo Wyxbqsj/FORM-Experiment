@@ -27,10 +27,11 @@ def groupOrders(orders:List[Order], match, transfer_t, plan, id_map):
         dataline+=',-1'
 
     while i<len(match):
-        original_indexi=get_original_id_by_mapped(i,id_map)
-        order_i=get_order(original_indexi,orders)
+
+        original_indexi=get_original_id_by_mapped(i,id_map)  # 相对ID为i的order的最初的绝对ID
+        order_i=get_order(original_indexi,orders) # 找到最初的preference table中的order
         package = Order(dataline)
-        if len(match[i])==0:
+        if len(match[i])==0: # 由于各种限制，该order在本batch得不到匹配
             i = i + 1
             continue
         partner=match[i][0]
@@ -41,6 +42,7 @@ def groupOrders(orders:List[Order], match, transfer_t, plan, id_map):
         original_index_partner=get_original_id_by_mapped(partner,id_map)
         order_partner=get_order(original_index_partner,orders)
         if partner+1==i: # orders[i]没能匹配上对象，单独打包成一个package
+            # print(1)
             package=order_i
             packageList.append(package)
             package.id=newId
@@ -54,6 +56,7 @@ def groupOrders(orders:List[Order], match, transfer_t, plan, id_map):
             package.passengerCount = order_i.passengerCount + order_partner.passengerCount
             package.tripDistance = order_i.tripDistance + order_partner.tripDistance
             package.maxWait = order_i.maxWait
+            package.married = True
 
             partner_rank=find_index(transfer_t,i,partner+1)
             # import pdb
@@ -63,25 +66,25 @@ def groupOrders(orders:List[Order], match, transfer_t, plan, id_map):
             comDistance=ManhaPick2Pick(order_i,order_partner)+ManhaDrop2Drop(order_i,order_partner)
             if planNumber==1:
                 package.pickX=order_i.pickX
-                package.pickY=order_i.pickX
+                package.pickY=order_i.pickY
                 package.dropX=order_partner.dropX
                 package.dropY=order_partner.dropY
                 package.absluteDistance=ManhaPick2Drop(order_partner,order_i)+comDistance
             elif planNumber==2:
                 package.pickX = order_i.pickX
-                package.pickY = order_i.pickX
+                package.pickY = order_i.pickY
                 package.dropX = order_i.dropX
                 package.dropY = order_i.dropY
                 package.absluteDistance = ManhaPick2Drop(order_partner, order_partner)+comDistance
             elif planNumber==3:
                 package.pickX = order_partner.pickX
-                package.pickY = order_partner.pickX
+                package.pickY = order_partner.pickY
                 package.dropX = order_partner.dropX
                 package.dropY = order_partner.dropY
                 package.absluteDistance = ManhaPick2Drop(order_i, order_i)+comDistance
             elif planNumber==4:
                 package.pickX = order_partner.pickX
-                package.pickY = order_partner.pickX
+                package.pickY = order_partner.pickY
                 package.dropX = order_i.dropX
                 package.dropY = order_i.dropY
                 package.absluteDistance = ManhaPick2Drop(order_i, order_partner)+comDistance
@@ -113,7 +116,7 @@ def find_index(transfer_t,i,partner): # 找出partner在transfer_t[i]中的排�
 if __name__ == '__main__':
     batch_gap = 60
     problemInstance = ProblemInstance(data_path, 1000)
-    currentTime = problemInstance.startTime + batch_gap
+    currentTime = problemInstance.startTime + batch_gap*2
 
     count_list = [0 for i in range(5)]
     empty = 0
@@ -132,12 +135,18 @@ if __name__ == '__main__':
     match, t, transfer_t, id_map, plan = solve(orders=orders, current_time=currentTime,
                                                    last_round_orders=last_round_orders,
                                                    algorithm=1, with_G=True)
+    # for i in match:
+    #     if i and i[0]==i:
+    #         print(i)
     res=groupOrders(orders,match,transfer_t,plan,id_map)
+    #
+    print(len(orders),len(match),len(res))
+    # for i in match:
+    #     print(i)
 
-
-    print(len(orders),len(match))
     for i in res:
         summary = {'id':i.id,
+                   'married': i.married,
                     'pick_time':i.pickTime,
                     'drop_time':i.dropoffTime,
                     'pickX':i.pickX,

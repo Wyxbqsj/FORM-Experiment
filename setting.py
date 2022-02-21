@@ -18,7 +18,7 @@ wait_time_noise = 10
 
 # 算法
 total_round = 100
-algorithm = 1
+algorithm = 2
 with_G = False
 
 

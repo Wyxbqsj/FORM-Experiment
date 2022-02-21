@@ -5,10 +5,11 @@ np.random.seed(seed)
 
 
 class Order:
-    def __init__(self, dataLine, id=-1):
+    def __init__(self, dataLine, id=-1, married=False):
         matched = 0
         match_id = None
         nextBatchedOrder = []
+        self.married=married
         self.id = id
         dataList = dataLine.strip().split(',')
         self.pickTime = time.mktime(time.strptime(dataList[1], '%Y-%m-%d %H:%M:%S'))
@@ -35,7 +36,7 @@ class Order:
                 self.speed = 0.00015
             if self.speed < 0.00006:
                 self.speed = 0.00006
-        self.deadline = (self.absluteDistance / self.speed) * 1.5 + self.durable
+        self.deadline = (self.absluteDistance / self.speed) * 2.0 + self.durable
         self.totalAmount = float(dataList[-2])
         self.available = True
 

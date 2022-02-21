@@ -24,7 +24,10 @@ def main():
     totalAmount = 0
     serveTime = 0
     for order in tqdm(serveredOrder):
-        count += 1
+        if order.married==True:
+            count+=2
+        else:
+            count += 1
         totalAmount += order.totalAmount
         serveTime += order.dropoffTime - order.pickTime
     d = datetime.now()

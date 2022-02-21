@@ -39,7 +39,7 @@ def solveDP(problem: ProblemInstance):
             #solution = reinforce(orders, drivers, index)
         for package, driver in solution:
             driver.serve(package, currentTime)
-        # if evaluate:
+        # if evaluat:e
         #     assess(solution, index)
         currentTime += fragment #一个batch是60s
         index += 1

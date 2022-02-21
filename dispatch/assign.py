@@ -13,7 +13,8 @@ def match(orders: list, drivers: list, income=False):
     ordersRewards = np.zeros((len(drivers), len(orders))) - 10 #行是driver, 列是order
     if len(orders) == 0 or len(drivers) == 0: return ordersRewards
     driversLocation = np.array([[driver.x, driver.y] for driver in drivers])
-    ordersLocation = np.array([[order.pickX, order.pickY] for order in orders]).T #注意.T(矩阵转置)
+    ordersLocation = np.array([[order.pickX, order.pickY] for order in orders])
+    ordersLocation = ordersLocation.T #注意.T(矩阵转置)
     if income == False:
         ordersReward = np.ones(len(orders)) #如果没有income,就将reward设置为1
     else:
