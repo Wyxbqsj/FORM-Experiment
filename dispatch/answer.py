@@ -10,7 +10,7 @@ from experiment.solve import solve
 from experiment.package import groupOrders
 
 
-def solveDP(problem: ProblemInstance):
+def solveDP(problem: ProblemInstance, total_round=3000, algorithm_strategy=algorithm, with_G_strategy=with_G):
     currentTime = problem.startTime
     index = 0
     # if algorithm[0] != "r" and algorithm[0] != "b":
@@ -22,9 +22,16 @@ def solveDP(problem: ProblemInstance):
         orders, drivers = problem.batch(currentTime) #得到是每个batch的driver和order
         #import pdb
         #pdb.set_trace()
+        orders += last_round_orders
+        last_round_orders = []
+
+        # 算法运行
         match, t, transfer_t, id_map, plan = solve(orders=orders, current_time=currentTime,
                                                    last_round_orders=last_round_orders,
-                                                   algorithm=1, with_G=True)
+                                                   algorithm=algorithm_strategy, with_G=with_G_strategy)
+        # match, t, transfer_t, id_map, plan = solve(orders=orders, current_time=currentTime,
+        #                                            last_round_orders=last_round_orders,
+        #                                            algorithm=1, with_G=True)
         packages = groupOrders(orders, match, transfer_t, plan, id_map)
 
         if dispatch_algorithm == "random":

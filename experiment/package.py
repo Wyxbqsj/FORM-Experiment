@@ -32,22 +32,24 @@ def groupOrders(orders:List[Order], match, transfer_t, plan, id_map):
         order_i=get_order(original_indexi,orders) # 找到最初的preference table中的order
         package = Order(dataline)
         if len(match[i])==0: # 由于各种限制，该order在本batch得不到匹配
-            i = i + 1
-            continue
-        partner=match[i][0]
-        # print(partner)
-        if partner==None:
-            i = i + 1
-            continue
-        original_index_partner=get_original_id_by_mapped(partner,id_map)
-        order_partner=get_order(original_index_partner,orders)
-        if partner+1==i: # orders[i]没能匹配上对象，单独打包成一个package
-            # print(1)
-            package=order_i
+            package = order_i
             packageList.append(package)
-            package.id=newId
-            newId+=1
-        else: #orders[i]匹配上了对象orders[match[i][0]]
+            package.id = newId
+            newId += 1
+        else:
+            partner=match[i][0]
+            # print(partner)
+            if partner==None:
+                i = i + 1
+                continue
+            original_index_partner=get_original_id_by_mapped(partner,id_map)
+            order_partner=get_order(original_index_partner,orders)
+            # if partner+1==i: # orders[i]没能匹配上对象，单独打包成一个package
+            #     package=order_i
+            #     packageList.append(package)
+            #     package.id=newId
+            #     newId+=1
+            # else: #orders[i]匹配上了对象orders[match[i][0]]
             package.id=newId
             newId+=1
             # 获得i和他的partner采用的是哪种plan，并基于此设定package的其他属性
@@ -143,6 +145,14 @@ if __name__ == '__main__':
     print(len(orders),len(match),len(res))
     # for i in match:
     #     print(i)
+    count=0
+    for i in res:
+        if i.married==True:
+            count+=2
+        else:
+            count+=1
+    print(count)
+
 
     for i in res:
         summary = {'id':i.id,

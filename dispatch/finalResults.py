@@ -36,7 +36,7 @@ def main():
     if not os.path.exists(target_folder):
         os.makedirs(target_folder)
     with open(os.path.join(target_folder,
-                           "%s_%s_%d_%d_%d_%s.txt" % (algorithm, dispatch_algorithm, month, day, fragment, d.strftime("%d-%H-%M"))),
+                           "%s_%s_%d_%d_%d_%d_%s_%s.txt" % (algorithm, dispatch_algorithm, month, day, driverCount, fragment, d.strftime("%d-%H-%M"),with_G)),
                            "w", encoding="utf8") as f:
         f.write("execute:%f  count:%d  time:%f  income:%f" % (t2-t1, count, serveTime, totalAmount))
 
