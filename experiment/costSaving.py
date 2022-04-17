@@ -73,8 +73,8 @@ def cost_saving(orders: List[Order]):
                 cosTheta = -1
 
             Theta=math.acos(cosTheta)*57.3 # 1弧度约等于57.3度
-            if Theta < 90 and ManhaPick2Pick(orders[i], orders[j])/orders[i].speed < orders[i].maxWait and \
-                    ManhaPick2Pick(orders[i],orders[j])/orders[j].speed < orders[j].maxWait:
+            if Theta < 90 and ManhaPick2Pick(orders[i], orders[j])/0.0001 < orders[i].maxWait and \
+                    ManhaPick2Pick(orders[i],orders[j])/0.0001 < orders[j].maxWait:
                 com = ManhaPick2Pick(orders[i], orders[j])+ManhaDrop2Drop(orders[i], orders[j])
                 plan1 = com+ManhaPick2Drop(orders[j],orders[i])
                 plan2 = com+ManhaPick2Drop(orders[j],orders[j])
@@ -118,6 +118,34 @@ def cost_saving(orders: List[Order]):
                     myClass(orders[i].id, orders[j].id, save_total, save_individual, rate, plan))
     return ptable
 
+def computeAvg(t):
+    # print(type(t[0][0]))
+    # print(t[0])
+    # assert False
+    # t=list(t.values())
+    m=len(t)
+    avg_t = {}
+    for i in t.keys():
+        sum=0
+        k=len(t[i])
+        for j in range(k):
+            if t[i][j].save_individual<0:
+                t[i][j].save_individual=0
+            sum+=t[i][j].save_individual
+        avg_t[i]=sum/k
+    return avg_t
+
+# def computeAvg(t):
+#     t=list(t.values())
+#     m=len(t)
+#     avg_t=[0]*m
+#     for i in range(m):
+#         sum=0
+#         k=len(t[i])
+#         for j in range(k):
+#             sum+=t[i][j].save_individual
+#         avg_t[i]=sum/k
+#     return avg_t
 
 def transfer_id_map(t):
     t = list(t.values())
@@ -132,6 +160,7 @@ def transfer_id_map(t):
     t_individual_cost_saving = []
     t_total_cost_saving = []
     t_plan=[] # 记录每个人和其他人共乘所采用的方案
+
     for i in range(len(t)):
         # transfer_t[i] = [t[i][j].match_id for j in range(len(t[i]))]
         t[i] = sorted(t[i], key=lambda myClass: myClass.save_individual, reverse=True)
@@ -145,6 +174,7 @@ def transfer_id_map(t):
             tmp_individual_cost_saving.insert(j, t[i][j].save_individual)
             tmp_total_cost_saving.insert(j, t[i][j].save_total)
             tmp_plan.insert(j,t[i][j].plan) # 在第j个位置插入了i和j拼车所采用的plan
+
 
         transfer_t.insert(i, tmp) # 第i行插入passenger i 的所有partner转换后的id
         t_individual_cost_saving.insert(i, tmp_individual_cost_saving)

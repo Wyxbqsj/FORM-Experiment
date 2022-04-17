@@ -6,6 +6,7 @@ from GFRM import greedy_roommate_matching
 from algorithm_config import set_config
 
 
+
 def get_order(target_id, order_list):
     for order in order_list:
         if order.id == target_id:
@@ -20,6 +21,13 @@ def solve(orders, current_time, last_round_orders,
     t = cost_saving(orders)
     transfer_t, original_individual_cost_saving, original_total_cost_saving, id_map, original_plan = transfer_id_map(t)
     sorted_edge_list = sort_total_cost(t, id_map)
+
+    for i in range(len(original_individual_cost_saving)):
+        sum_saving=0
+        length=len(original_individual_cost_saving[i])
+        for j in range(length):
+            sum_saving+=original_individual_cost_saving[i][j]
+
 
     test_data = deepcopy(transfer_t)
     test_data_2 = deepcopy(transfer_t)

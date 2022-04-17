@@ -3,15 +3,16 @@ import time
 from copy import deepcopy
 
 from tqdm import tqdm
-
+import sys
+sys.path.append(r'D:\FORMnew\FORM-Experiment')
 from experiment.gas import gas_match
 from setting import *
 from datadeal.problem import ProblemInstance
 from experiment.solve import solve
-from experiment.costSaving import get_original_id_by_mapped, cost_saving, transfer_id_map
-import sys
+from experiment.costSaving import get_original_id_by_mapped, cost_saving, transfer_id_map,computeAvg
 
 sys.path.append(algorithm_path)
+
 from preference_util import verify_match, fairness_compute
 
 
@@ -31,7 +32,8 @@ def experiment(total_round=3000, algorithm_strategy=2, with_G_strategy=True):
         'unfair': 0,
 
         'total_cost_saving': 0,
-        'running_time': 0
+        'running_time': 0,
+        'satisfaction':0
     }
 
     # 实验开始
@@ -53,7 +55,8 @@ def experiment(total_round=3000, algorithm_strategy=2, with_G_strategy=True):
             'unfair': 0,
 
             'total_cost_saving': 0,
-            'running_time': 0
+            'running_time': 0,
+            'satisfaction': 0
         }
 
         # 获取数据
@@ -72,6 +75,7 @@ def experiment(total_round=3000, algorithm_strategy=2, with_G_strategy=True):
 
         unfair_count, none_count = fairness_compute(transfer_t, match)
 
+        avg=computeAvg(t)
         for i in range(len(match)):
             if len(match[i]) == 0:
                 continue
@@ -83,6 +87,7 @@ def experiment(total_round=3000, algorithm_strategy=2, with_G_strategy=True):
             my_class_list_i = t[order_id_i]
 
             find_flag = False
+
             for j in my_class_list_i:
                 if j.match_id == partner + 1:
                     "**************修正save_individual*************"
@@ -91,9 +96,15 @@ def experiment(total_round=3000, algorithm_strategy=2, with_G_strategy=True):
                     "***************************"
                     measurement['total_cost_saving'] = measurement['total_cost_saving'] + j.save_individual
                     find_flag = True
+                    # print(order_id_i)
+                    if j.save_individual>= avg[order_id_i]:
+                        measurement['satisfaction']+=1
 
             if not find_flag:
                 raise Exception("bug")
+
+
+
 
         measurement['size'] = len(match)
         measurement['unmatched'] = verification_result['single_dog'] + verification_result['wrong_match'] + verification_result['long_list']
@@ -105,6 +116,7 @@ def experiment(total_round=3000, algorithm_strategy=2, with_G_strategy=True):
         overall_measurement['unmatched'] += measurement['unmatched']
         overall_measurement['total_cost_saving'] += measurement['total_cost_saving']
         overall_measurement['unfair'] += measurement['unfair']
+        overall_measurement['satisfaction']+=measurement['satisfaction']
 
         # 收尾
         current_time = current_time + fragment
@@ -113,6 +125,7 @@ def experiment(total_round=3000, algorithm_strategy=2, with_G_strategy=True):
     overall_measurement['match_rate'] = overall_measurement['matched'] / overall_measurement['size']
     overall_measurement['running_time'] = end_time - start_time
     overall_measurement['total_cost_saving'] /= overall_measurement['size']
+    overall_measurement['satisfaction']/=overall_measurement['size']
 
     # d = datetime.now()
     # with open("result/%s_%d_%d_%d_%s.txt" % (algorithm, month, day, fragment, d.strftime("%d-%H-%M")),
@@ -134,6 +147,7 @@ def experiment_2(total_round=1000, algorithms=[1, 3]):
         overall_measurement[i] = {
             'size': 0,
             'total_cost_saving': 0,
+            'satisfaction': 0
         }
 
     # 实验开始
@@ -151,6 +165,7 @@ def experiment_2(total_round=1000, algorithms=[1, 3]):
             measurement[i] = {
                 'size': 0,
                 'total_cost_saving': 0,
+                'satisfaction': 0
             }
 
         # 获取数据
@@ -176,7 +191,7 @@ def experiment_2(total_round=1000, algorithms=[1, 3]):
 
         different_count = 0
         for i in range(len(match_1)):
-            if match_1[i] != match_3[i]:
+            if match_1[i] != match_3[i]: # 将两个match中不同的pair，存在match_tmp中
                 match_tmp[0][i] = match_1[i]
                 match_tmp[1][i] = match_3[i]
                 different_count = different_count + 1
@@ -192,6 +207,7 @@ def experiment_2(total_round=1000, algorithms=[1, 3]):
                 continue
             match, verification_result = verify_match(match, skip_bug)
 
+            avg = computeAvg(t)
             for i in range(len(match)):
                 if len(match[i]) == 0:
                     continue
@@ -210,6 +226,8 @@ def experiment_2(total_round=1000, algorithms=[1, 3]):
                             j.save_individual = 0
                         "***********************************************"
                         measurement[tmp_i]['total_cost_saving'] += j.save_individual
+                        if j.save_individual >= avg[order_id_i]:
+                            measurement[tmp_i]['satisfaction'] += 1
                         find_flag = True
 
                 if not find_flag:
@@ -219,15 +237,21 @@ def experiment_2(total_round=1000, algorithms=[1, 3]):
 
             overall_measurement[tmp_i]['size'] += measurement[tmp_i]['size']
             overall_measurement[tmp_i]['total_cost_saving'] += measurement[tmp_i]['total_cost_saving']
+            overall_measurement[tmp_i]['satisfaction'] += measurement[tmp_i]['satisfaction']
 
         # 收尾
         current_time += fragment
 
     for i in range(2):
         overall_measurement[i]['total_cost_saving'] /= overall_measurement[i]['size']
+        overall_measurement[i]['satisfaction'] /= overall_measurement[i]['size']
 
     print(overall_measurement[0])
     print(overall_measurement[1])
+    ratio=fragment/base_wait_time
+    print("f/w: (%f), f: (%d), w: (%d)" % (ratio, fragment,base_wait_time))
+    print(algorithms[0])
+    print(algorithms[1])
 
 
 def experiment_gas(total_round=1000):
@@ -287,18 +311,18 @@ def experiment_gas(total_round=1000):
 if __name__ == '__main__':
 
     # experiment 1
-    overall_measurement = experiment_gas(total_round)
-    print('algorithm_strategy:', 'gas',
-          'with_G:', 'None',
-          overall_measurement)
-    for algorithm_strategy in [0, 1, 2, 3]:
-        for with_G in [True, False]:
-            if algorithm_strategy == 0 and with_G == False:
-                continue
-            overall_measurement = experiment(total_round, algorithm_strategy, with_G)
-            print('algorithm_strategy:', algorithm_strategy,
-                  'with_G:', with_G,
-                  overall_measurement)
+    # overall_measurement = experiment_gas(total_round)
+    # print('algorithm_strategy:', 'gas',
+    #       'with_G:', 'None',
+    #       overall_measurement)
+    # for algorithm_strategy in [0, 1, 2, 3]:
+    #     for with_G in [True, False]:
+    #         if algorithm_strategy == 0 and with_G == False:
+    #             continue
+    #         overall_measurement = experiment(total_round, algorithm_strategy, with_G)
+    #         print('algorithm_strategy:', algorithm_strategy,
+    #               'with_G:', with_G,
+    #               overall_measurement)
 
 
-    # experiment_2()
+      experiment_2()

@@ -11,19 +11,19 @@ algorithm_path = r'D:\FORM\FORM-Implement-master'
 carSpeed=0.0001 #每秒移动的经纬度,大约是66km/h
 
 # 超参数
-fragment = 120
-base_wait_time = 60
+fragment = 60
+base_wait_time = 120
 wait_time_noise = 10
 
 
 # 算法
-total_round = 100
-algorithm = 2
+total_round = 1000
+algorithm = 3
 with_G = True
 
 
 # 算法
-dispatch_algorithm = "random"
+dispatch_algorithm = "best"
 
 bigDistance = 0.01271 * 3
 
@@ -31,7 +31,7 @@ bigDistance = 0.01271 * 3
 seed = 71437
 
 # 司机数量
-driverCount = 4000
+driverCount = 2000
 
 #
 takeTime = 60 * 3
